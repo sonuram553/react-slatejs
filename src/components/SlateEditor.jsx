@@ -16,7 +16,15 @@ export const SlateEditor = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={setValue}>
-      <Editable placeholder="Enter some plain text ..." />
+      <Editable
+        placeholder="Enter some plain text ..."
+        onKeyDown={(e) => {
+          if (e.key === "&") {
+            e.preventDefault();
+            editor.insertText("and ");
+          }
+        }}
+      />
     </Slate>
   );
 };
