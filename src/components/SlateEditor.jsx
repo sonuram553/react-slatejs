@@ -1,11 +1,12 @@
 /* eslint-disable default-case */
 import React, { useState, useMemo } from "react";
-import { createEditor, Transforms, Editor, Text } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import { withHistory } from "slate-history";
+import { createEditor } from "slate";
 
-import { CodeElement } from "./CodeELement";
 import { DefaultElement } from "./DefaultElement";
+import { CustomEditor } from "./CustomEditor";
+import { CodeElement } from "./CodeELement";
 import { Leaf } from "./Leaf";
 
 const initialValue = [
@@ -40,27 +41,13 @@ export const SlateEditor = () => {
     switch (e.key) {
       case "`": {
         e.preventDefault();
-        const [match] = Editor.nodes(editor, {
-          match: (n) => n.type === "code",
-        });
-
-        Transforms.setNodes(
-          editor,
-          { type: match ? "paragraph" : "code" },
-          { match: (n) => Editor.isBlock(editor, n) }
-        );
-
+        CustomEditor.toggleCodeBlock(editor);
         break;
       }
 
       case "b": {
         e.preventDefault();
-        Transforms.setNodes(
-          editor,
-          { bold: true },
-          { match: (n) => Text.isText(n), split: true }
-        );
-
+        CustomEditor.toggleBoldMark(editor);
         break;
       }
     }
@@ -70,6 +57,15 @@ export const SlateEditor = () => {
 
   return (
     <Slate editor={editor} value={value} onChange={setValue}>
+      <div className="toolbar">
+        <button onClick={() => CustomEditor.toggleBoldMark(editor)}>
+          Bold
+        </button>
+        <button onClick={() => CustomEditor.toggleCodeBlock(editor)}>
+          Code Block
+        </button>
+      </div>
+
       <Editable
         placeholder="Enter some plain text ..."
         renderElement={renderElement}
