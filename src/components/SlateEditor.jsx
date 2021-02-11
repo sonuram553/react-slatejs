@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from "react";
-import { createEditor } from "slate";
+import { createEditor, Node } from "slate";
 import { Slate, Editable, withReact } from "slate-react";
 import { withHistory } from "slate-history";
 
@@ -10,9 +10,19 @@ const initialValue = [
   },
 ];
 
+const serialize = (value) => {
+  return value.map((n) => Node.string(n)).join("\n");
+};
+
+const deserialize = (string) =>
+  string &&
+  string.split("\n").map((line) => ({
+    children: [{ text: line }],
+  }));
+  
 export const SlateEditor = () => {
   const [value, setValue] = useState(
-    JSON.parse(localStorage.getItem("editor")) || initialValue
+    deserialize(localStorage.getItem("editor")) || initialValue
   );
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
@@ -22,7 +32,7 @@ export const SlateEditor = () => {
       value={value}
       onChange={(value) => {
         setValue(value);
-        localStorage.setItem("editor", JSON.stringify(value));
+        localStorage.setItem("editor", serialize(value));
       }}
     >
       <Editable placeholder="Enter some plain text ..." />
