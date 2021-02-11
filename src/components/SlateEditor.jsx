@@ -11,11 +11,20 @@ const initialValue = [
 ];
 
 export const SlateEditor = () => {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(
+    JSON.parse(localStorage.getItem("editor")) || initialValue
+  );
   const editor = useMemo(() => withHistory(withReact(createEditor())), []);
 
   return (
-    <Slate editor={editor} value={value} onChange={setValue}>
+    <Slate
+      editor={editor}
+      value={value}
+      onChange={(value) => {
+        setValue(value);
+        localStorage.setItem("editor", JSON.stringify(value));
+      }}
+    >
       <Editable placeholder="Enter some plain text ..." />
     </Slate>
   );
